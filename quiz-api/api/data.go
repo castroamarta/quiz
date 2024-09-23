@@ -71,12 +71,6 @@ var UserSecretsMock = map[string]string{
 	"eve":   "boat",
 }
 
-var UserAPIKeysMock = map[string]string{
-	"alice": "VAFJWEKSFS",
-	"bob":   "FEJRGIERGJ",
-	"eve":   "PQIENFJRGR",
-}
-
 var StatsMock = map[string]float64{
 	"alice": 00.00,
 	"bob":   00.00,

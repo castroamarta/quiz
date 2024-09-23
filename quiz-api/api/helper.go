@@ -12,9 +12,8 @@ func getQuizResult() int {
 	return numCorrectAnswers
 }
 
-func getQuizStats(userID string) float64 {
-	numCorrectAnswers := getQuizResult()
-	StatsMock[userID] = float64(numCorrectAnswers*100) / float64(NumQuizQuestions)
+func getQuizComparisonStats(userID string) float64 {
+	updateQuizStats(userID)
 	quizStat := StatsMock[userID]
 	numUsers := 0 // number of quizzers that performed worse
 	for userID := range StatsMock {
@@ -23,6 +22,11 @@ func getQuizStats(userID string) float64 {
 		}
 	}
 	return float64((numUsers)*100) / float64(len(StatsMock)-1)
+}
+
+func updateQuizStats(userID string) {
+	numCorrectAnswers := getQuizResult()
+	StatsMock[userID] = float64(numCorrectAnswers*100) / float64(NumQuizQuestions)
 }
 
 func validateAnswers(answers []Answer) error {
@@ -77,9 +81,9 @@ func getQuestion(id string) (Question, error) {
 	return question, nil
 }
 
-func validateAPIKey(APIKey string) error {
-	for key := range UserAPIKeysMock {
-		if UserAPIKeysMock[key] == APIKey {
+func validateCredentials(username string, password string) error {
+	for user := range UserSecretsMock {
+		if user == username && password == UserSecretsMock[user] {
 			return nil
 		}
 	}

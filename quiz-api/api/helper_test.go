@@ -1,4 +1,5 @@
 package api
+
 import (
 	"fmt"
 	"testing"
@@ -19,11 +20,31 @@ func Test_getQuizResult(t *testing.T) {
 
 func Test_getQuizStats(t *testing.T) {
 	t.Run(`should calculate the quiz stats successfully`, func(t *testing.T) {
+		// bob misses all questions
 		UserSolution["1"] = "b"
+		UserSolution["2"] = "a"
+		UserSolution["3"] = "a"
+		actual := getQuizComparisonStats("bob")
+
+		expected := float64(0)
+		assert.Equal(t, expected, actual)
+
+		// eve guesses all questions
+		UserSolution["1"] = "a"
 		UserSolution["2"] = "b"
 		UserSolution["3"] = "b"
-		actual := getQuizStats("alice")
-		expected := float64(50)
+		actual = getQuizComparisonStats("eve")
+
+		expected = float64(100)
+		assert.Equal(t, expected, actual)
+
+		// alice guesses 1 question
+		UserSolution["1"] = "a"
+		UserSolution["2"] = "a"
+		UserSolution["3"] = "a"
+		actual = getQuizComparisonStats("alice")
+
+		expected = float64(50)
 		assert.Equal(t, expected, actual)
 	})
 }
@@ -65,4 +86,16 @@ func Test_validateAnswer(t *testing.T) {
 			assert.Equal(t, test.expected, actual)
 		})
 	}
+}
+
+func Test_validateCredentials(t *testing.T) {
+	t.Run(`should validate basic auth request credentials successfully`, func(t *testing.T) {
+		actual := validateCredentials("alice", "rainbow")
+		assert.Equal(t, nil, actual)
+	})
+	t.Run(`should return error when the credentials provided are invalid`, func(t *testing.T) {
+		actual := validateCredentials("alice", "rainbo")
+		expected := fmt.Errorf("user unauthorized to perform method call")
+		assert.Equal(t, expected, actual)
+	})
 }

@@ -11,7 +11,6 @@ func BasicAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if ok { 
 		for user := range UserSecretsMock {
 			if user == username && password == UserSecretsMock[user] {
-				fmt.Fprintln(w, UserAPIKeysMock[user])
 				return
 			}
 		}
@@ -21,9 +20,10 @@ func BasicAuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetQuestionsHander(w http.ResponseWriter, r *http.Request) {
-	if err := validateAPIKey(r.Header.Get("X-API-Key")); err != nil {
+	username, password, _ := r.BasicAuth()
+	if err := validateCredentials(username, password); err != nil {
 		http.Error(w, UnauthorizedErrorMessage, http.StatusUnauthorized)
-		return 
+		return
 	}
 	var quiz = QuizMock
 	w.Header().Set("Content-Type", "application/json")
@@ -31,9 +31,10 @@ func GetQuestionsHander(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetQuestionHander(w http.ResponseWriter, r *http.Request) {
-	if err := validateAPIKey(r.Header.Get("X-API-Key")); err != nil {
+	username, password, _ := r.BasicAuth()
+	if err := validateCredentials(username, password); err != nil {
 		http.Error(w, UnauthorizedErrorMessage, http.StatusUnauthorized)
-		return 
+		return
 	}
 	question, err := getQuestion(r.URL.Query().Get("id"))
 	if err != nil {
@@ -45,28 +46,30 @@ func GetQuestionHander(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetResultHandler(w http.ResponseWriter, r *http.Request) {
-	if err := validateAPIKey(r.Header.Get("X-API-Key")); err != nil {
+	username, password, _ := r.BasicAuth()
+	if err := validateCredentials(username, password); err != nil {
 		http.Error(w, UnauthorizedErrorMessage, http.StatusUnauthorized)
-		return 
+		return
 	}
 	result := fmt.Sprintf("Number of correct answers: %d", getQuizResult())
 	fmt.Fprintln(w, result)
 }
 
 func GetStatsHandler(w http.ResponseWriter, r *http.Request) {
-	if err := validateAPIKey(r.Header.Get("X-API-Key")); err != nil {
+	username, password, _ := r.BasicAuth()
+	if err := validateCredentials(username, password); err != nil {
 		http.Error(w, UnauthorizedErrorMessage, http.StatusUnauthorized)
-		return 
+		return
 	}
-	username, _, _ := r.BasicAuth()
-	stats := fmt.Sprintf("You were better than %.f%% of all quizzers", getQuizStats(username))
+	stats := fmt.Sprintf("You were better than %.f%% of all quizzers", getQuizComparisonStats(username))
 	fmt.Fprintln(w, stats)
 }
 
 func PostAnswersHandler(w http.ResponseWriter, r *http.Request) {
-	if err := validateAPIKey(r.Header.Get("X-API-Key")); err != nil {
+	username, password, _ := r.BasicAuth()
+	if err := validateCredentials(username, password); err != nil {
 		http.Error(w, UnauthorizedErrorMessage, http.StatusUnauthorized)
-		return 
+		return
 	}
 	answers := []Answer{}
     err := json.NewDecoder(r.Body).Decode(&answers)
@@ -79,6 +82,7 @@ func PostAnswersHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	updateQuizStats(username)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(answers)
 }
