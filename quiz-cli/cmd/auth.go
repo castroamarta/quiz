@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 type Auth struct {
@@ -18,15 +17,12 @@ type Auth struct {
 	APIKey string
 }
 
-var auth = &Auth{}
+// HARD CODED - ideally this should be populated by the auth command
+var credentials = &Auth{APIKey: "VAFJWEKSFS"} 
 
 var authCmd = &cobra.Command{
 	Use:   "auth",
 	Short: "Command for basic authentication",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		viper.BindPFlag("username", cmd.Flags().Lookup("username"))
-		viper.BindPFlag("password", cmd.Flags().Lookup("password"))
-   },
 	Run: func(cmd *cobra.Command, args []string) {
 		username, err := cmd.Flags().GetString("username")
 		if err != nil {
@@ -36,9 +32,9 @@ var authCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		auth.Username = username
-		auth.Password = password
-		auth.authRequest()
+		credentials.Username = username
+		credentials.Password = password
+		credentials.authRequest()
 	},
 }
 

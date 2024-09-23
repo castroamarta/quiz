@@ -15,8 +15,7 @@ var getResultCmd = &cobra.Command{
 	Short: "Displays the quiz result",
 	Long: `This command will display the total number of correct answers`,
 	Run: func(cmd *cobra.Command, args []string) {
-		auth = &Auth{APIKey: "key1"} 
-		auth.getResultRequest()
+		credentials.getResultRequest()
 	},
 }
 

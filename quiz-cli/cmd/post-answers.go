@@ -38,22 +38,18 @@ var postAnswersCmd = &cobra.Command{
 			answer.OptionID = answerSlice[1]
 			answers = append(answers, answer)
 		}
-		// HARD CODED - ideally this should be populated by the auth command
-		auth = &Auth{APIKey: "key1"}
-		if err := auth.postAnswersRequest(answers); err != nil {
-			fmt.Print(err)
-		}
+		credentials.postAnswersRequest(answers)
 	},
 }
 
-func (auth *Auth) postAnswersRequest(answers []Answer) error {
+func (auth *Auth) postAnswersRequest(answers []Answer) {
 
 	client := &http.Client{Timeout: 5 * time.Second}
 	var buf bytes.Buffer
 
     err := json.NewEncoder(&buf).Encode(answers)
     if err != nil {
-		return fmt.Errorf("ERROR: newEncoder: %v", err)
+		log.Fatal(err)
     }
 
 	request, err := http.NewRequest("POST", "http://localhost:8081/answers", &buf)
@@ -75,7 +71,6 @@ func (auth *Auth) postAnswersRequest(answers []Answer) error {
 		log.Fatal(err)
 	}
 	fmt.Printf("%v", string(body))
-	return nil
 }
 
 func init() {

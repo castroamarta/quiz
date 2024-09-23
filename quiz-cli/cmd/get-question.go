@@ -22,9 +22,7 @@ var getQuestionCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// HARD CODED - ideally this should be populated by the auth command
-		auth = &Auth{APIKey: "key1"} 
-		auth.getQuestionRequest(args[0])
+		credentials.getQuestionRequest(args[0])
 	},
 }
 

@@ -15,9 +15,7 @@ var getStatsCmd = &cobra.Command{
 	Short: "Displays the quiz statistics",
 	Long: `This command will display the percentage of correct anwsers when compared to other quizzers`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// HARD CODED - ideally this should be populated by the auth command
-		auth = &Auth{APIKey: "key1"} 
-		auth.getStatsRequest()
+		credentials.getStatsRequest()
 	},
 }
 

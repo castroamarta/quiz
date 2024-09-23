@@ -27,9 +27,7 @@ var getQuestionsCmd = &cobra.Command{
 	Short: "Lists all the quiz questions",
 	Long: `This command will display all questions and options`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// HARD CODED - ideally this should be populated by the auth command
-		auth = &Auth{APIKey: "key1"} 
-		auth.getQuestionsRequest() 
+		credentials.getQuestionsRequest() 
 	},
 }
 
