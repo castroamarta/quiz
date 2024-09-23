@@ -79,6 +79,6 @@ var UserAPIKeysMock = map[string]string{
 
 var StatsMock = map[string]float64{
 	"alice": 00.00,
-	"bob":   30.00,
-	"eve":   80.00,
+	"bob":   00.00,
+	"eve":   00.00,
 }
