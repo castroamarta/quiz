@@ -45,7 +45,7 @@ func (auth *Auth) questionsRequest() string {
 	}
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("X-API-KEY", auth.APIKey)
+	request.SetBasicAuth(auth.Username, auth.Password)
 
 	response, err := client.Do(request)
 	if err != nil {

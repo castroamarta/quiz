@@ -8,21 +8,40 @@ import (
 
 func Test_ExecuteGetStatsCommand(t *testing.T) {
 	t.Run("should return the quiz stats successfully for configuration 1", func(t *testing.T) {
-		credentials = &Auth{APIKey: "VAFJWEKSFS"} // alice guesses one option
+
+		// alice guesses one question
+		authCmd := NewAuthCmd()
+		authCmdBuff := bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "alice", "--password", "rainbow"})
+		authCmd.Execute()
+
 		selectOptionsCommand := NewSelectOptionsCommand()
 		selectOptionsBuff := bytes.NewBufferString("")
 		selectOptionsCommand.SetOut(selectOptionsBuff)
 		selectOptionsCommand.SetArgs([]string{"1:a,2:a,3:a"})
 		selectOptionsCommand.Execute()
 
-		credentials = &Auth{APIKey: "FEJRGIERGJ"} // bob misses all options
+		// bob misses all question
+		authCmd = NewAuthCmd()
+		authCmdBuff = bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "bob", "--password", "flower"})
+		authCmd.Execute()
+
 		selectOptionsCommand = NewSelectOptionsCommand()
 		selectOptionsBuff = bytes.NewBufferString("")
 		selectOptionsCommand.SetOut(selectOptionsBuff)
 		selectOptionsCommand.SetArgs([]string{"1:b,2:a,3:a"})
 		selectOptionsCommand.Execute()
 
-		credentials = &Auth{APIKey: "PQIENFJRGR"} // eve misses all options
+		// eve misses all question
+		authCmd = NewAuthCmd()
+		authCmdBuff = bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "eve", "--password", "boat"})
+		authCmd.Execute()
+
 		selectOptionsCommand = NewSelectOptionsCommand()
 		selectOptionsBuff = bytes.NewBufferString("")
 		selectOptionsCommand.SetOut(selectOptionsBuff)
@@ -44,25 +63,99 @@ func Test_ExecuteGetStatsCommand(t *testing.T) {
 	})
 
 	t.Run("should return the quiz stats successfully for configuration 2", func(t *testing.T) {
-		credentials = &Auth{APIKey: "VAFJWEKSFS"} // alice guesses one option
+
+		// alice guesses all question
+		authCmd := NewAuthCmd()
+		authCmdBuff := bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "alice", "--password", "rainbow"})
+		authCmd.Execute()
+
 		selectOptionsCommand := NewSelectOptionsCommand()
 		selectOptionsBuff := bytes.NewBufferString("")
+		selectOptionsCommand.SetOut(selectOptionsBuff)
+		selectOptionsCommand.SetArgs([]string{"1:a,2:b,3:b"})
+		selectOptionsCommand.Execute()
+
+		// bob guesses one question
+		authCmd = NewAuthCmd()
+		authCmdBuff = bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "bob", "--password", "flower"})
+		authCmd.Execute()
+
+		selectOptionsCommand = NewSelectOptionsCommand()
+		selectOptionsBuff = bytes.NewBufferString("")
 		selectOptionsCommand.SetOut(selectOptionsBuff)
 		selectOptionsCommand.SetArgs([]string{"1:a,2:a,3:a"})
 		selectOptionsCommand.Execute()
 
-		credentials = &Auth{APIKey: "FEJRGIERGJ"} // bob misses all options
-		selectOptionsCommand = NewSelectOptionsCommand()
-		selectOptionsBuff = bytes.NewBufferString("")
-		selectOptionsCommand.SetOut(selectOptionsBuff)
-		selectOptionsCommand.SetArgs([]string{"1:b,2:a,3:a"})
-		selectOptionsCommand.Execute()
+		// eve gueses two questions
+		authCmd = NewAuthCmd()
+		authCmdBuff = bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "eve", "--password", "boat"})
+		authCmd.Execute()
 
-		credentials = &Auth{APIKey: "PQIENFJRGR"} // eve guesses two options
 		selectOptionsCommand = NewSelectOptionsCommand()
 		selectOptionsBuff = bytes.NewBufferString("")
 		selectOptionsCommand.SetOut(selectOptionsBuff)
 		selectOptionsCommand.SetArgs([]string{"1:a,2:b,3:a"})
+		selectOptionsCommand.Execute()
+
+		getStatsCommand := NewGetStatsCmd()
+		getStatsBuff := bytes.NewBufferString("")
+		getStatsCommand.SetOut(getStatsBuff)
+		getStatsCommand.Execute()
+		actual, err := ioutil.ReadAll(getStatsBuff)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected := "You were better than 50% of all quizzers"
+		if string(actual) != expected {
+			t.Fatalf("expected \"%s\" got \"%s\"", expected, string(actual))
+		}
+	})
+
+	t.Run("should return the quiz stats successfully for configuration 3", func(t *testing.T) {
+
+		// alice misses all question
+		authCmd := NewAuthCmd()
+		authCmdBuff := bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "alice", "--password", "rainbow"})
+		authCmd.Execute()
+
+		selectOptionsCommand := NewSelectOptionsCommand()
+		selectOptionsBuff := bytes.NewBufferString("")
+		selectOptionsCommand.SetOut(selectOptionsBuff)
+		selectOptionsCommand.SetArgs([]string{"1:b,2:a,3:a"})
+		selectOptionsCommand.Execute()
+
+		// bob guesses one question
+		authCmd = NewAuthCmd()
+		authCmdBuff = bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "bob", "--password", "flower"})
+		authCmd.Execute()
+
+		selectOptionsCommand = NewSelectOptionsCommand()
+		selectOptionsBuff = bytes.NewBufferString("")
+		selectOptionsCommand.SetOut(selectOptionsBuff)
+		selectOptionsCommand.SetArgs([]string{"1:a,2:a,3:a"})
+		selectOptionsCommand.Execute()
+
+		// eve gueses all questions
+		authCmd = NewAuthCmd()
+		authCmdBuff = bytes.NewBufferString("")
+		authCmd.SetOut(authCmdBuff)
+		authCmd.SetArgs([]string{"--username", "eve", "--password", "boat"})
+		authCmd.Execute()
+
+		selectOptionsCommand = NewSelectOptionsCommand()
+		selectOptionsBuff = bytes.NewBufferString("")
+		selectOptionsCommand.SetOut(selectOptionsBuff)
+		selectOptionsCommand.SetArgs([]string{"1:a,2:b,3:b"})
 		selectOptionsCommand.Execute()
 
 		getStatsCommand := NewGetStatsCmd()
@@ -78,40 +171,4 @@ func Test_ExecuteGetStatsCommand(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", expected, string(actual))
 		}
 	})
-
-	// t.Run("should return the quiz stats successfully for configuration 3", func(t *testing.T) {
-	// 	credentials = &Auth{APIKey: "1:a,2:b,3:b"} // alice guesses all options
-	// 	selectOptionsCommand := NewSelectOptionsCommand()
-	// 	selectOptionsBuff := bytes.NewBufferString("")
-	// 	selectOptionsCommand.SetOut(selectOptionsBuff)
-	// 	selectOptionsCommand.SetArgs([]string{"1:a,2:b,3:b"})
-	// 	selectOptionsCommand.Execute()
-
-	// 	credentials = &Auth{APIKey: "FEJRGIERGJ"} // bob guesses one option
-	// 	selectOptionsCommand = NewSelectOptionsCommand()
-	// 	selectOptionsBuff = bytes.NewBufferString("")
-	// 	selectOptionsCommand.SetOut(selectOptionsBuff)
-	// 	selectOptionsCommand.SetArgs([]string{"1:a,2:a,3:a"})
-	// 	selectOptionsCommand.Execute()
-
-	// 	credentials = &Auth{APIKey: "PQIENFJRGR"} // eve guesses two options
-	// 	selectOptionsCommand = NewSelectOptionsCommand()
-	// 	selectOptionsBuff = bytes.NewBufferString("")
-	// 	selectOptionsCommand.SetOut(selectOptionsBuff)
-	// 	selectOptionsCommand.SetArgs([]string{"1:a,2:b,3:a"})
-	// 	selectOptionsCommand.Execute()
-
-	// 	getStatsCommand := NewGetStatsCmd()
-	// 	getStatsBuff := bytes.NewBufferString("")
-	// 	getStatsCommand.SetOut(getStatsBuff)
-	// 	getStatsCommand.Execute()
-	// 	actual, err := ioutil.ReadAll(getStatsBuff)
-	// 	if err != nil {
-	// 		t.Fatal(err)
-	// 	}
-	// 	expected := "You were better than 67% of all quizzers"
-	// 	if string(actual) != expected {
-	// 		t.Fatalf("expected \"%s\" got \"%s\"", expected, string(actual))
-	// 	}
-	// })
 }

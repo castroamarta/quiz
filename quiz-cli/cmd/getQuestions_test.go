@@ -7,12 +7,19 @@ import (
 )
 
 func Test_ExecuteGetQuestionsCommand(t *testing.T) {
+
+	authCmd := NewAuthCmd()
+	authCmdBuff := bytes.NewBufferString("")
+	authCmd.SetOut(authCmdBuff)
+	authCmd.SetArgs([]string{"--username", "alice", "--password", "rainbow"})
+	authCmd.Execute()
+
 	t.Run("should return the quiz questions successfully", func(t *testing.T) {
-		cmd := NewGetQuestionsCmd()
-		b := bytes.NewBufferString("")
-		cmd.SetOut(b)
-		cmd.Execute()
-		actual, err := ioutil.ReadAll(b)
+		questionsCmd := NewGetQuestionsCmd()
+		questionsCmdBuff := bytes.NewBufferString("")
+		questionsCmd.SetOut(questionsCmdBuff)
+		questionsCmd.Execute()
+		actual, err := ioutil.ReadAll(questionsCmdBuff)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -14,11 +14,9 @@ import (
 type Auth struct {
 	Username string
 	Password string
-	APIKey string
 }
 
-// HARD CODED - ideally this should be populated by the auth command
-var credentials = &Auth{APIKey: "VAFJWEKSFS"} 
+var credentials = &Auth{} 
 
 func NewAuthCmd() *cobra.Command {
 
@@ -75,7 +73,6 @@ func (auth *Auth) authRequest() string {
 	}
 	switch response.StatusCode {
 	case http.StatusOK:
-		auth.APIKey = strings.Join(strings.Fields(string(body)),"")
 		return "user authenticated successfully"
 	default:
 		return strings.TrimSpace(string(body))

@@ -7,6 +7,13 @@ import (
 )
 
 func Test_ExecuteGetResultCommand(t *testing.T) {
+
+	authCmd := NewAuthCmd()
+	authCmdBuff := bytes.NewBufferString("")
+	authCmd.SetOut(authCmdBuff)
+	authCmd.SetArgs([]string{"--username", "alice", "--password", "rainbow"})
+	authCmd.Execute()
+	
 	t.Run("should return the quiz result successfully when all answers are correct", func(t *testing.T) {
 		
 		selectOptionsCommand := NewSelectOptionsCommand()
