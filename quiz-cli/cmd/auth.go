@@ -16,7 +16,10 @@ type Auth struct {
 	Password string
 }
 
-var credentials = &Auth{} 
+var credentials = &Auth{
+	Username: "alice",
+	Password: "rainbow",
+} // HARDCODED - since auth flags are not being stored when executing the binary, only within the test environment (bug??)
 
 func NewAuthCmd() *cobra.Command {
 
