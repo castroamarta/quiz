@@ -21,10 +21,10 @@ GET | `curl 'http://localhost:8081/stats' --request "GET" -H 'X-API-Key: VAFJWEK
 
 This implementation relies on an authentication via API Key, provided and linked to a specific user when registering in the client application.
 
-The table bellow contains the registered mocked api keys that can be used to test these endpoints.
+The table bellow contains the registered mocked credentials that can be used to test these endpoints.
 
-API Key  | 
------------- | 
-`VAFJWEKSFS` | 
-`FEJRGIERGJ` | 
-`PQIENFJRGR` | 
+Username  | Password  | API Key  |
+------------ | ------------ |  ------------ | 
+`alice` | `rainbow` | `VAFJWEKSFS` | 
+`bob` | `flower` | `FEJRGIERGJ` | 
+`eve` | `boat` | `PQIENFJRGR` | 
