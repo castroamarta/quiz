@@ -20,25 +20,38 @@ type Auth struct {
 // HARD CODED - ideally this should be populated by the auth command
 var credentials = &Auth{APIKey: "VAFJWEKSFS"} 
 
-var authCmd = &cobra.Command{
-	Use:   "auth",
-	Short: "Command for basic authentication",
-	Run: func(cmd *cobra.Command, args []string) {
-		username, err := cmd.Flags().GetString("username")
-		if err != nil {
-			log.Fatal(err)
-		}
-		password, err := cmd.Flags().GetString("password")
-		if err != nil {
-			log.Fatal(err)
-		}
-		credentials.Username = username
-		credentials.Password = password
-		credentials.authRequest()
-	},
+func NewAuthCmd() *cobra.Command {
+
+	var username string
+	var password string
+
+	authCmd := &cobra.Command{
+		Use:   "auth",
+		Short: "Command for basic authentication",
+		Run: func(cmd *cobra.Command, args []string) {
+			username, err := cmd.Flags().GetString("username")
+			if err != nil {
+				log.Fatal(err)
+			}
+			password, err := cmd.Flags().GetString("password")
+			if err != nil {
+				log.Fatal(err)
+			}
+			credentials.Username = username
+			credentials.Password = password
+			out := credentials.authRequest()
+			fmt.Fprint(cmd.OutOrStdout(), out)
+		},
+	}
+	authCmd.Flags().StringVarP(&username, "username", "u", "", "Username (required if password is set)")
+	authCmd.Flags().StringVarP(&password, "password", "p", "", "Password (required if username is set)")
+	authCmd.MarkFlagRequired("username")
+	authCmd.MarkFlagRequired("password")
+	authCmd.MarkFlagsRequiredTogether("username", "password")
+	return authCmd
 }
 
-func (auth *Auth) authRequest() {
+func (auth *Auth) authRequest() string {
 
 	client := &http.Client{Timeout: 5 * time.Second}
 
@@ -63,21 +76,13 @@ func (auth *Auth) authRequest() {
 	switch response.StatusCode {
 	case http.StatusOK:
 		auth.APIKey = strings.Join(strings.Fields(string(body)),"")
-		fmt.Print("user authenticated successfully\n")
+		return "user authenticated successfully"
 	default:
-		fmt.Printf("%v", string(body))
+		return strings.TrimSpace(string(body))
 	}
 }
 
 func init() {
-	
-	var username string
-	var password string
-
-	authCmd.Flags().StringVarP(&username, "username", "u", "", "Username (required if password is set)")
-	authCmd.Flags().StringVarP(&password, "password", "p", "", "Password (required if username is set)")
-	authCmd.MarkFlagRequired("username")
-	authCmd.MarkFlagRequired("password")
-	authCmd.MarkFlagsRequiredTogether("username", "password")
+	authCmd := NewAuthCmd()
 	rootCmd.AddCommand(authCmd)
 }
